@@ -1,4 +1,5 @@
 import { UserData } from '../importForm';
+import { nameFromFile } from '../formatters';
 import { breakLines } from './lineManipulators';
 import {
   BasicTable,
@@ -100,8 +101,8 @@ async function csvRoute(filename: string, data: string, folderId?: string): Prom
   await createTable(parseFromCSV(filename, lines), folderId);
 }
 
-async function txtRoute(data: string, folderId?: string): Promise<void> {
-  await createTable(parseFromTxt(data), folderId);
+async function txtRoute(data: string, folderId?: string, fallbackName?: string): Promise<void> {
+  await createTable(parseFoundryJSON(parseFromTxt(data, { fallbackName })), folderId);
 }
 
 async function redditCollectionRoute(input: string): Promise<void> {
@@ -136,16 +137,22 @@ async function processText(input: string): Promise<void> {
  * Processes a single File object, placing the resulting table into the given folder.
  * The folder path mirrors the file's directory structure within the chosen root.
  */
+function fileExtension(filename: string): string {
+  const dotIndex = filename.lastIndexOf('.');
+  return dotIndex >= 0 ? filename.slice(dotIndex + 1).toLowerCase() : '';
+}
+
 async function processFile(file: File, folderId?: string): Promise<void> {
   const text = await file.text();
-  const ext = file.name.split('.').pop()?.toLowerCase();
+  const ext = fileExtension(file.name);
   switch (ext) {
     case 'json':
       return jsonRoute(text, folderId);
     case 'csv':
       return csvRoute(file.name, text, folderId);
     case 'txt':
-      return txtRoute(`${file.name}\n${text}`, folderId);
+    case '':
+      return txtRoute(text, folderId, nameFromFile(file.name));
     default:
       console.warn(`roll-table-importer | Skipping unsupported file type: ${file.name}`);
   }
@@ -194,12 +201,14 @@ async function fetchAndRoute(path: string, folderId?: string): Promise<void> {
   const response = await fetch(path);
   if (!response.ok) throw new Error(`Could not fetch: ${path}`);
   const text = await response.text();
-  const ext = path.split('.').pop()?.toLowerCase();
+  const basename = path.split('/').pop() ?? path;
+  const ext = fileExtension(basename);
   switch (ext) {
     case 'json':
       return jsonRoute(text, folderId);
     case 'txt':
-      return txtRoute(`${path.split('/').pop()}\n${text}`, folderId);
+    case '':
+      return txtRoute(text, folderId, nameFromFile(basename));
     case 'csv':
       return csvRoute(path, text, folderId);
     default:
@@ -214,8 +223,9 @@ async function processFoundryDirectory(dirPath: string): Promise<void> {
     const result = await (foundry as any).applications.apps.FilePicker.implementation.browse('data', path);
     const currentFolderId = folderId ?? (await getOrCreateFolder(path.split('/').pop() ?? path));
     for (const file of result.files as string[]) {
-      const ext = file.split('.').pop()?.toLowerCase();
-      if (!['json', 'csv', 'txt'].includes(ext ?? '')) continue;
+      const basename = file.split('/').pop() ?? file;
+      const ext = fileExtension(basename);
+      if (!['json', 'csv', 'txt', ''].includes(ext)) continue;
       try {
         await fetchAndRoute(file, currentFolderId);
       } catch (e) {

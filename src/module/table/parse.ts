@@ -105,6 +105,22 @@ export function parseFromCSV(filename: string, lines: string[]): TableData {
 
 const trimDieLine = (line: string): string => `1d${line.trim().split(' ')[0].replace('1d', '').replace('d', '')}`;
 
+/** True when the first line of a file looks like a table title rather than a result row. */
+function looksLikeTitleLine(line: string, followingLines: string[]): boolean {
+  const trimmed = line.trim();
+  if (!trimmed) return false;
+  if (hasDieNumber(trimmed)) return true;
+  if (trimmed.startsWith('###')) return false;
+  if (hasWeights(trimmed)) return false;
+  if (followingLines.some(hasWeights)) return true;
+  return false;
+}
+
+export interface ParseFromTxtOptions {
+  /** Used for file imports when the content has no title line. */
+  fallbackName?: string;
+}
+
 const entryTxtReduce = (acc: TableEntry[], curr: string): TableEntry[] => {
   if (hasWeights(curr)) {
     const [rangeStr, ...rest] = curr.split(' ');
@@ -116,15 +132,27 @@ const entryTxtReduce = (acc: TableEntry[], curr: string): TableEntry[] => {
   return acc;
 };
 
-export function parseFromTxt(input: string): FoundryTable {
+export function parseFromTxt(input: string, options?: ParseFromTxtOptions): FoundryTable {
   const lines = breakLines(input.replace('/t', '\n'));
-  let rawName = lines.shift() ?? 'Parsed Table';
+  let rawName: string;
+
+  if (
+    options?.fallbackName &&
+    lines.length > 0 &&
+    !looksLikeTitleLine(lines[0], lines.slice(1))
+  ) {
+    rawName = options.fallbackName;
+  } else {
+    rawName = lines.shift() ?? 'Parsed Table';
+  }
   let formula: string | undefined;
 
   if (hasDieNumber(rawName)) {
     const split = rawName.split(/(d[0-9]{1,4})/);
     formula = trimDieLine(split[1]);
-    rawName = split[0];
+    const beforeDie = split[0]?.trim() ?? '';
+    const afterDie = split[2]?.trim() ?? '';
+    rawName = beforeDie || afterDie;
   } else if (lines.length > 0 && hasDieNumber(lines[0])) {
     formula = trimDieLine(lines.shift() ?? '');
   }
@@ -145,7 +173,7 @@ export function parseFromTxt(input: string): FoundryTable {
   }
 
   return {
-    name: cleanName(rawName),
+    name: cleanName(rawName) || 'Parsed Table',
     formula: formula ?? formulaFromEntries(results),
     description: tableDescription,
     results,
