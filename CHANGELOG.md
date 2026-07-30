@@ -2,12 +2,9 @@
 
 [Roll Table Importer](https://foundryvtt.com/packages/roll-table-importer)
 
-## [2.0.3](https://github.com/jendave/roll-table-importer/blob/main/CHANGELOG.md) (2026-07-29)
+## [2.0.2](https://github.com/jendave/roll-table-importer/blob/main/CHANGELOG.md) (2026-07-29)
 
 * Fixed ([Issue #5 - File import names table after filename instead of first line](https://github.com/jendave/roll-table-importer/issues/5)).
-
-## [2.0.2](https://github.com/jendave/roll-table-importer/blob/main/CHANGELOG.md) (2026-07-03)
-
 * More cleanups of the build process.
 
 ## [2.0.1](https://github.com/jendave/roll-table-importer/blob/main/CHANGELOG.md) (2026-07-03)
