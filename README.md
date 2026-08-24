@@ -60,7 +60,7 @@ Cloth
 Rope
 ```
 
-This example is pasted into the textbox. `Die Type`, `Table Name`, `Description` and `Ranges` can also be added.
+This example is pasted into the textbox. `Die Type`, `Table Name`, `Description` and `Ranges` can also be added. Descriptions can be added by using `###` as a delimiter.
 
 ```txt
 d100 This place is...
@@ -75,23 +75,6 @@ d100 This place is...
 76-80 A storage vault.
 81-90 A sewer.
 91-100 A maze.
-```
-
-And descriptions can be added by using `###` as a delimiter.
-
-```txt
-d100 This place is... (with descriptions)
-### Type of Location \n Has the location fallen into disrepair?
-1-10 Stronghold ### A stronghold description.
-11-20 Temple ### A temple description.
-21-35 Tomb ### A tomb description.
-36-40 Prison ### A prison description.
-41-55 Mine ### A mine description.
-55-70 Lair ### A lair description.
-71-75 Palace ### A palace description.
-76-80 Vault ### A storage vault description.
-81-90 Sewer ### A sewer description.
-91-100 Maze ### A maze description.
 ```
 
 Multiple tables can be part of a collection and will be placed in a folder. Put the name of the folder separately on the first line and paste into the textbox.
