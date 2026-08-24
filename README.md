@@ -9,7 +9,6 @@
 
 * [Roll Table Importer](https://github.com/jendave/roll-table-importer) supports Foundry v13 and v14.
   * Roll tables created/edited on v13 and v14 *are not* compatible with v12.
-  * Roll tables created/edited on v12 are compatible with v13 and v14.
 
 ## Features and Notes
 
@@ -246,7 +245,7 @@ Please check out my other modules and resources for Ironsworn, Ironsworn: Starfo
 * [Token Action HUD Ironsworn](https://foundryvtt.com/packages/token-action-hud-ironsworn)
 * [VOID 1680 AM for FoundryVTT](https://foundryvtt.com/packages/void-1680-am)
 * [Ancient Wonders](https://foundryvtt.com/packages/ancient-wonders)
-* [Rise & Shiningstar - An Adventure for Ironsworn: Starforged](https://foundryvtt.com/packages/rise-and-shining-star)
+* [Starforged Adventures](https://foundryvtt.com/packages/rise-and-shining-star)
 * [Roll Table Importer](https://foundryvtt.com/packages/roll-table-importer)
 * [Ironsworn Impacts](https://foundryvtt.com/packages/ironsworn-impacts)
 
